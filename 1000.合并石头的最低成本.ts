@@ -5,7 +5,8 @@
  */
 
 // @lc code=start
-function mergeStones(stones: number[], k: number): number {
+// 记忆化搜索
+/* function mergeStones(stones: number[], k: number): number {
   const INF = 0x3f3f3f3f;
   const n = stones.length;
   // 每一次合并将k堆石头变成1堆，堆数减少k-1
@@ -58,5 +59,41 @@ function mergeStones(stones: number[], k: number): number {
   // 目标：dp[0][n-1][1]
   const ret = process(0, n - 1, 1);
   return ret;
+} */
+
+// 严格表结构
+function mergeStones(stones: number[], k: number): number {
+  const INF = 0x3f3f3f3f;
+  const n = stones.length;
+  if ((n - 1) % (k - 1) !== 0) {
+    return -1;
+  }
+  const dp: number[][][] = new Array(n)
+    .fill(0)
+    .map(() => new Array(n).fill(0).map(() => new Array(k + 1).fill(INF)));
+  const sum: number[] = new Array(n).fill(0);
+  for (let i = 0, s = 0; i < n; i++) {
+    dp[i][i][1] = 0;
+    s += stones[i];
+    sum[i] = s;
+  }
+  for (let len = 2; len <= n; len++) {
+    for (let l = 0; l < n && l + len - 1 < n; l++) {
+      let r = l + len - 1;
+      for (let t = 2; t <= k; t++) {
+        for (let p = l; p < r; p += k - 1) {
+          dp[l][r][t] = Math.min(
+            dp[l][r][t],
+            dp[l][p][1] + dp[p + 1][r][t - 1]
+          );
+        }
+      }
+      dp[l][r][1] = Math.min(
+        dp[l][r][1],
+        dp[l][r][k] + sum[r] - (l === 0 ? 0 : sum[l - 1])
+      );
+    }
+  }
+  return dp[0][n - 1][1];
 }
 // @lc code=end
