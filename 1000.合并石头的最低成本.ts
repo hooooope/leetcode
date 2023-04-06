@@ -62,7 +62,7 @@
 } */
 
 // 严格表结构
-function mergeStones(stones: number[], k: number): number {
+/* function mergeStones(stones: number[], k: number): number {
   const INF = 0x3f3f3f3f;
   const n = stones.length;
   if ((n - 1) % (k - 1) !== 0) {
@@ -95,5 +95,37 @@ function mergeStones(stones: number[], k: number): number {
     }
   }
   return dp[0][n - 1][1];
+} */
+
+// 状态优化
+// 在方法一中，我们用dp[l][r][t]表示将区间[l,r]的石头堆合并为t堆的最小成本，这里t的范围是[1,k]。事实上，对于一个固定的区间[l,r]，最终合并到小于k堆时的堆数是固定的
+// 我们每次合并都会减少k-1堆，初始时[l,r]的堆数是r-l+1，合并到不能合并时的堆数为(r-l)mod(k-1)+1
+// 所以我们可以直接用dp[l][r]表示将区间[l,r]合并到不能为止的最小成本
+// 它的本质上是通过忽略方法一中一定无解的状态，加快求解
+function mergeStones(stones: number[], k: number): number {
+  const INF = 0x3f3f3f3f;
+  const n = stones.length;
+  if ((n - 1) % (k - 1) !== 0) {
+    return -1;
+  }
+  const dp: number[][] = new Array(n).fill(0).map(() => new Array(n).fill(INF));
+  const sum: number[] = new Array(n).fill(0);
+  for (let i = 0, s = 0; i < n; i++) {
+    dp[i][i] = 0;
+    s += stones[i];
+    sum[i] = s;
+  }
+  for (let len = 2; len <= n; len++) {
+    for (let l = 0; l < n && l + len - 1 < n; l++) {
+      let r = l + len - 1;
+      for (let p = l; p < r; p += k - 1) {
+        dp[l][r] = Math.min(dp[l][r], dp[l][p] + dp[p + 1][r]);
+      }
+      if ((r - l) % (k - 1) === 0) {
+        dp[l][r] += sum[r] - (l === 0 ? 0 : sum[l - 1]);
+      }
+    }
+  }
+  return dp[0][n - 1];
 }
 // @lc code=end
