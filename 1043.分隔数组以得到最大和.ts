@@ -5,6 +5,7 @@
  */
 
 // @lc code=start
+// 动态规划
 function maxSumAfterPartitioning(arr: number[], k: number): number {
   const n = arr.length;
   // dp[i]表示以arr[i-1]结尾分割的最大和
