@@ -36,7 +36,7 @@
   由于输出数组不算在空间复杂度内，那么我们可以将l或r数组用输出数组来计算
   先把输出数组当作l数组来计算，然后再动态构造r数组得到结果
 */
-function productExceptSelf(nums: number[]): number[] {
+/* function productExceptSelf(nums: number[]): number[] {
   const n = nums.length;
   const ret: number[] = new Array(n);
   // ret[i]表示索引i左侧所有元素的乘积
@@ -53,6 +53,21 @@ function productExceptSelf(nums: number[]): number[] {
     ret[i] = ret[i] * r;
     // r需要包含右边所有的乘积，所以计算下一个结果时需要将当前值乘到r上
     r *= nums[i];
+  }
+  return ret;
+} */
+
+// 一次遍历
+function productExceptSelf(nums: number[]): number[] {
+  const n = nums.length;
+  const ret: number[] = new Array(n).fill(1);
+  let prefix = 1;
+  let suffix = 1;
+  for (let i = 0; i < n; i++) {
+    ret[i] *= prefix;
+    ret[n - 1 - i] *= suffix;
+    prefix *= nums[i];
+    suffix *= nums[n - 1 - i];
   }
   return ret;
 }
