@@ -5,6 +5,7 @@
  */
 
 // @lc code=start
+// 双向链表+哈希表
 class DLinkedNode {
   prev: DLinkedNode | null = null;
   next: DLinkedNode | null = null;
