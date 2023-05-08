@@ -78,6 +78,8 @@ function minPushBox(grid: string[][]): number {
         }
       }
     }
+    // 先求得未推动箱子之前的所有状态，再计算推动箱子之后的所有状态
+    // 避免由于未计算为推动箱子之前的状态，导致推箱子一圈回到原点的情况仍被计入结果，造成结果偏大
     queue = queue1;
   }
   return -1;
