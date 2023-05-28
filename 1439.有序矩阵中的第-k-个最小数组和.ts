@@ -112,14 +112,23 @@ function kthSmallest(mat: number[][], k: number): number {
   }
   return prev[k - 1];
 }
-/* const ret = kthSmallest(
-  [
-    [1, 2, 7, 8, 10],
-    [4, 4, 5, 5, 6],
-    [3, 3, 5, 6, 7],
-    [2, 4, 7, 9, 9],
-  ],
-  7
-);
-console.log(ret); */
+
+function lengthOfLongestSubstring(s: string): number {
+  let ret = 0;
+  const n = s.length;
+  const set = new Set<string>();
+  for (let l = 0, r = 0; l < n; l++) {
+    if (l !== 0) {
+      set.delete(s[l - 1]);
+    }
+    while (r < n && !set.has(s[r])) {
+      set.add(s[r]);
+      r++;
+    }
+    ret = Math.max(ret, r - l);
+  }
+  return ret;
+}
+const ret = lengthOfLongestSubstring("pwwkew");
+console.log(ret);
 // @lc code=end
