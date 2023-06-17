@@ -69,7 +69,7 @@ class Heap<T = any> {
       }
       if (
         rightChildIndex < this.size &&
-        this.compare(this.heap[rightChildIndex], this.heap[currentIndex])
+        this.compare(this.heap[rightChildIndex], this.heap[largestIndex])
       ) {
         largestIndex = rightChildIndex;
       }

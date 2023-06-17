@@ -6,36 +6,103 @@
 
 // @lc code=start
 // 优先队列
-/* function maxSlidingWindow(nums: number[], k: number): number[] {
-  const ret: number[] = new Array(nums.length - k + 1).fill(0);
-  // leetcode内置优先队列为：@datastructures-js/priority-queue-v4.1.0
-  // 该版本不支持在构造函数中传入比较函数
-  // 因此使用hack的priority值进行比较
-  // 原本意义的比较函数
-  // const compare = (a: [number, number], b: [number, number]) => {
-  //   // 当元素值不同时，按元素值降序排序
-  //   // 当元素值相同时，按索引值降序排序
-  //   return a[0] !== b[0] ? b[0] - a[0] : b[1] - a[1];
-  // };
-  const pq = new MaxPriorityQueue({
-    priority: (el: [number, number]) => {
-      return el[0] * 100000 + el[1];
-    },
-  });
-  for (let i = 0; i < k; i++) {
-    pq.enqueue([nums[i], i]);
+class Heap<T = any> {
+  heap: T[] = [];
+  // a为child，b为parent
+  // 若parent需要和child交换则返回true，否则返回false
+  constructor(private compare: (a: T, b: T) => boolean) {
+    this.compare = compare;
   }
-  ret[0] = pq.front()["element"][0];
-  for (let i = k; i < nums.length; i++) {
-    pq.enqueue([nums[i], i]);
-    // 移除过期的元素
-    while (pq.front()["element"][1] <= i - k) {
-      pq.dequeue();
+
+  get size() {
+    return this.heap.length;
+  }
+
+  peek() {
+    return this.heap[0];
+  }
+
+  add(value: T) {
+    this.heap.push(value);
+    this.heapifyUp();
+  }
+
+  poll() {
+    if (this.size === 0) {
+      return null;
     }
-    ret[i - k + 1] = pq.front()["element"][0];
+    if (this.size === 1) {
+      return this.heap.pop()!;
+    }
+    const max = this.heap[0];
+    this.heap[0] = this.heap.pop()!;
+    this.heapifyDown();
+    return max;
+  }
+
+  heapifyUp() {
+    let currentIndex = this.size - 1;
+    while (currentIndex > 0) {
+      const parentIndex = Math.floor((currentIndex - 1) / 2);
+      if (this.compare(this.heap[currentIndex], this.heap[parentIndex])) {
+        [this.heap[currentIndex], this.heap[parentIndex]] = [
+          this.heap[parentIndex],
+          this.heap[currentIndex],
+        ];
+        currentIndex = parentIndex;
+      } else {
+        break;
+      }
+    }
+  }
+
+  heapifyDown() {
+    let currentIndex = 0;
+    while (currentIndex < this.size) {
+      let largestIndex = currentIndex;
+      const leftChildIndex = 2 * currentIndex + 1;
+      const rightChildIndex = 2 * currentIndex + 2;
+      if (
+        leftChildIndex < this.size &&
+        this.compare(this.heap[leftChildIndex], this.heap[currentIndex])
+      ) {
+        largestIndex = leftChildIndex;
+      }
+      if (
+        rightChildIndex < this.size &&
+        this.compare(this.heap[rightChildIndex], this.heap[largestIndex])
+      ) {
+        largestIndex = rightChildIndex;
+      }
+      if (largestIndex !== currentIndex) {
+        [this.heap[currentIndex], this.heap[largestIndex]] = [
+          this.heap[largestIndex],
+          this.heap[currentIndex],
+        ];
+        currentIndex = largestIndex;
+      } else {
+        break;
+      }
+    }
+  }
+}
+function maxSlidingWindow(nums: number[], k: number): number[] {
+  const n = nums.length;
+  const ret: number[] = new Array(n - k + 1);
+  const pq = new Heap<[number, number]>((a, b) => a[1] > b[1]);
+  for (let i = 0; i < k; i++) {
+    pq.add([i, nums[i]]);
+  }
+  ret[0] = pq.peek()[1];
+  for (let i = 0; i < n - k; i++) {
+    pq.add([i + k, nums[i + k]]);
+    while (pq.peek()[0] < i + 1) {
+      pq.poll();
+    }
+    ret[i + 1] = pq.peek()[1];
   }
   return ret;
-} */
+}
 
 // 单调队列
 /* function maxSlidingWindow(nums: number[], k: number): number[] {
@@ -62,7 +129,7 @@
 } */
 
 // 单调队列
-function maxSlidingWindow(nums: number[], k: number): number[] {
+/* function maxSlidingWindow(nums: number[], k: number): number[] {
   const n = nums.length;
   const q: number[] = [];
   for (let i = 0; i < k; i++) {
@@ -84,7 +151,7 @@ function maxSlidingWindow(nums: number[], k: number): number[] {
     ret.push(nums[q[0]]);
   }
   return ret;
-}
+} */
 
 // 分块+预处理
 /* function maxSlidingWindow(nums: number[], k: number): number[] {
