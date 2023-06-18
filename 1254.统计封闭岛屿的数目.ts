@@ -124,13 +124,13 @@ function closedIsland(grid: number[][]): number {
       uf.union((n - 1) * m + j, 0);
     }
   }
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < m; j++) {
+  for (let i = 1; i < n; i++) {
+    for (let j = 1; j < m; j++) {
       if (grid[i][j] === 0) {
-        if (i > 0 && grid[i - 1][j] === 0) {
+        if (grid[i - 1][j] === 0) {
           uf.union(i * m + j, (i - 1) * m + j);
         }
-        if (j > 0 && grid[i][j - 1] === 0) {
+        if (grid[i][j - 1] === 0) {
           uf.union(i * m + j, i * m + j - 1);
         }
       }
